@@ -6,12 +6,22 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 from flask import Flask, request
+import json
 
 # Load environment variables
 load_dotenv()
 
-# Initialize Firebase
-cred = credentials.Certificate(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+# Load Firebase service account key from environment variable
+service_account_info = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
+if not service_account_info:
+    raise ValueError("The GOOGLE_APPLICATION_CREDENTIALS environment variable is not set.")
+
+# Parse the service account key from JSON string
+service_account_dict = json.loads(service_account_info)
+
+# Initialize Firebase with the service account key from the environment variable
+cred = credentials.Certificate(service_account_dict)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
